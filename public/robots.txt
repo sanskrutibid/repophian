@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /enquiry.php
+Disallow: /apply.php
+Disallow: /404
+
+Sitemap: https://www.phianinfotec.com/sitemap.xml

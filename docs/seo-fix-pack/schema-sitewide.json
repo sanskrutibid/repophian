@@ -1,0 +1,99 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.phianinfotec.com/#organization",
+      "name": "Phian Infotec",
+      "alternateName": ["Phian", "Phian Infotech"],
+      "url": "https://www.phianinfotec.com/",
+      "logo": "https://www.phianinfotec.com/assets/images/logo-mark.png",
+      "description": "360-degree branding and marketing agency in Nagpur and Kolkata: brand strategy, content, media, web, search and PR planned by one senior team.",
+      "foundingDate": "2012",
+      "founder": {
+        "@type": "Person",
+        "name": "Debojyoti Ghosh",
+        "sameAs": "https://www.linkedin.com/in/debojyoti-ghosh-8a540097"
+      },
+      "email": "info@phianinfotec.com",
+      "telephone": "+917709809577",
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "contactType": "sales",
+          "telephone": "+917709809577",
+          "email": "info@phianinfotec.com",
+          "areaServed": "IN"
+        }
+      ],
+      "areaServed": [
+        { "@type": "City", "name": "Nagpur" },
+        { "@type": "City", "name": "Kolkata" },
+        { "@type": "Country", "name": "India" }
+      ],
+      "knowsAbout": [
+        "Brand strategy",
+        "Brand identity",
+        "Content marketing",
+        "Performance marketing",
+        "Web development",
+        "Search engine optimisation",
+        "Public relations"
+      ],
+      "location": [
+        { "@id": "https://www.phianinfotec.com/nagpur#office" },
+        { "@id": "https://www.phianinfotec.com/kolkata#office" }
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/company/phian-infotec",
+        "https://www.instagram.com/phian.infotec/",
+        "https://www.facebook.com/profile.php?id=100093212820681"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.phianinfotec.com/#website",
+      "url": "https://www.phianinfotec.com/",
+      "name": "Phian Infotec",
+      "inLanguage": "en-IN",
+      "publisher": { "@id": "https://www.phianinfotec.com/#organization" }
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://www.phianinfotec.com/nagpur#office",
+      "name": "Phian Infotec, Nagpur",
+      "url": "https://www.phianinfotec.com/nagpur",
+      "image": "https://www.phianinfotec.com/assets/images/team.jpg",
+      "telephone": "+917709809577",
+      "email": "info@phianinfotec.com",
+      "parentOrganization": { "@id": "https://www.phianinfotec.com/#organization" },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "5, Pannase Layout, Indraprastha Nagar, Swavalambi Nagar",
+        "addressLocality": "Nagpur",
+        "addressRegion": "Maharashtra",
+        "postalCode": "440022",
+        "addressCountry": "IN"
+      },
+      "hasMap": "https://maps.app.goo.gl/SSNXDENLc4Ky4azMA"
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://www.phianinfotec.com/kolkata#office",
+      "name": "Phian Infotec, Kolkata",
+      "url": "https://www.phianinfotec.com/kolkata",
+      "image": "https://www.phianinfotec.com/assets/images/team.jpg",
+      "telephone": "+917972100822",
+      "email": "info@phianinfotec.com",
+      "parentOrganization": { "@id": "https://www.phianinfotec.com/#organization" },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "11F, 04, Street Number 372, Action Area I, IIF, Newtown (5th Floor)",
+        "addressLocality": "Kolkata",
+        "addressRegion": "West Bengal",
+        "postalCode": "700160",
+        "addressCountry": "IN"
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+# ------------------------------------------------------------------
+# phianinfotec.com  .htaccess  STAGE 2 (after prerendering)
+#
+# Use once the build outputs one index.html per route, e.g.
+#   public_html/index.html
+#   public_html/about/index.html
+#   public_html/work-nsh-hospital/index.html
+#   public_html/404/index.html
+#
+# The single-page-app fallback is GONE on purpose: an unknown URL now gets a
+# real 404 status instead of the app shell with 200.
+#
+# Not tested on the live server. Try it on a staging subdomain first, then run:
+#   bash verify.sh https://staging.phianinfotec.com
+# ------------------------------------------------------------------
+
+Options -Indexes
+# /about is now a real folder. Stop Apache/LiteSpeed redirecting /about to /about/.
+DirectorySlash Off
+
+RewriteEngine On
+
+# 1. One hostname.
+RewriteCond %{HTTP_HOST} ^phianinfotec\.com$ [NC]
+RewriteRule ^ https://www.phianinfotec.com%{REQUEST_URI} [R=301,L]
+
+# 2. Old-site URLs.
+RewriteRule ^team/?$ /about [R=301,L]
+
+# 3. Duplicate case-study URLs (confirm each pair first).
+# RewriteRule ^case-study/nsh-hospital$ /work-nsh-hospital [R=301,L]
+# RewriteRule ^case-study/mukunda$ /work-mukunda-group [R=301,L]
+
+# 4. Canonical URL shape: no /index.html, no trailing slash.
+RewriteCond %{THE_REQUEST} \s/+index\.html[\s?]
+RewriteRule ^index\.html$ / [R=301,L]
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# 5. Serve the prerendered page for a clean URL: /about -> /about/index.html
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.+)$ /$1/index.html [L]
+
+# 6. Everything else that is not a real file is a real 404,
+#    shown with the prerendered not-found page.
+ErrorDocument 404 /404/index.html
+
+# 7. Caching: HTML always revalidated, hashed assets cached for a year.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "-[A-Z0-9]{8}\.(js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>

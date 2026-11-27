@@ -1,0 +1,35 @@
+<!--
+  STAGE 1: paste into <head> of src/index.html, replacing <title>Phian</title>.
+
+  These are site-wide defaults served in the raw HTML on every route, so crawlers
+  and link previews that do not run JavaScript (WhatsApp, LinkedIn, Facebook,
+  GPTBot, ClaudeBot, PerplexityBot) stop seeing a page called "Phian" with no description.
+
+  seo.service.ts keeps overriding them per page. It must UPDATE these tags
+  (Title.setTitle, Meta.updateTag), not add second copies.
+
+  Deliberately NOT included: <link rel="canonical"> and og:url. Until the site is
+  prerendered (Stage 2) the same raw HTML is served for every URL, so a hard-coded
+  canonical here would tell crawlers every page is the homepage. Leave those to
+  seo.service.ts until Stage 2.
+-->
+<title>Phian Infotec | Branding &amp; Marketing Agency in Nagpur</title>
+<meta name="description" content="One senior team for brand strategy, content, ads, web, SEO and PR. Nagpur and Kolkata offices. Book a free brand review.">
+<meta property="og:title" content="Phian Infotec | Branding &amp; Marketing Agency in Nagpur">
+<meta property="og:description" content="One senior team for brand strategy, content, ads, web, SEO and PR. Nagpur and Kolkata offices. Book a free brand review.">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:title" content="Phian Infotec | Branding &amp; Marketing Agency in Nagpur">
+<meta name="twitter:description" content="One senior team for brand strategy, content, ads, web, SEO and PR. Nagpur and Kolkata offices. Book a free brand review.">
+
+<!--
+  FONTS: index.html currently loads three Google Fonts stylesheets requesting 17 families.
+  The homepage only uses Bricolage Grotesque. Keep this one line in index.html:
+-->
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&amp;display=swap" rel="stylesheet">
+<!--
+  Remove the Noto Sans Devanagari stylesheet and the 15-family stylesheet
+  (Abril Fatface, Anton, Archivo Black, Cinzel, Cormorant Garamond, Montserrat, Oswald,
+  Pacifico, Playfair Display, Poppins, Righteous, Rozha One, Space Grotesk, Syne, Yellowtail)
+  from index.html and load them only inside the route that uses them
+  (inject the <link> from that component, or @import in its lazy-loaded stylesheet).
+-->

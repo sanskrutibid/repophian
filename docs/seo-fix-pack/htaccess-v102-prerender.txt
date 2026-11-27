@@ -1,0 +1,76 @@
+# Phian Infotec .htaccess  (v102, prerendered Angular build: one index.html per route)
+#
+# How a request is answered:
+#   /            -> /index.html                (prerendered home)
+#   /about       -> /about/index.html          (prerendered page, because the folder exists)
+#   /unknown-url -> /index.csr.html            (EMPTY client-side shell, Angular shows the right page / 404 page)
+#
+# IMPORTANT: the fallback must never be /index.html. That file is the prerendered HOME page; serving it
+# for other URLs shows the home page (and breaks hydration) on every page that has no folder.
+Options -Indexes
+# /about is a real folder: do not let Apache/LiteSpeed redirect /about to /about/
+DirectorySlash Off
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. One hostname: phianinfotec.com -> www (TLS ends at the CDN, so no %{HTTPS} test on purpose).
+  RewriteCond %{HTTP_HOST} ^phianinfotec\.com$ [NC]
+  RewriteRule ^ https://www.phianinfotec.com%{REQUEST_URI} [R=301,L]
+
+  # 2. Old-site URLs, as real 301s (the app only redirected them with JavaScript).
+  RewriteRule ^team/?$ /about [R=301,L]
+  RewriteRule ^work-mediskin/?$ /case-study/mediskin [R=301,L]
+  RewriteRule ^work-mukunda-nagpur-real-estate/?$ /case-study/mukunda [R=301,L]
+  # Add other old WordPress URLs here (Search Console > Pages > Not found):
+  # RewriteRule ^services/?$ /what-we-do [R=301,L]
+  # RewriteRule ^portfolio/?$ /work [R=301,L]
+
+  # 3. /index.html and trailing-slash duplicates.
+  RewriteCond %{THE_REQUEST} \s/+index\.html[\s?]
+  RewriteRule ^index\.html$ / [R=301,L]
+  RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+  # 4. Duplicate case-study URLs: confirm each pair is the same story, then uncomment.
+  # RewriteRule ^case-study/nsh-hospital$ /work-nsh-hospital [R=301,L]
+  # RewriteRule ^case-study/mukunda$ /work-mukunda-group [R=301,L]
+
+  # 5. Prerendered page for a clean URL: /about -> /about/index.html
+  RewriteCond %{REQUEST_FILENAME}/index.html -f
+  RewriteRule ^(.+)$ /$1/index.html [L]
+
+  # 6. A missing file is a real 404, not the app shell.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule \.(?:js|mjs|css|map|png|jpe?g|webp|avif|svg|gif|ico|mp4|webm|woff2?|ttf|txt|xml|json|pdf)$ - [R=404,L]
+
+  # 7. Any other address (no prerendered folder): the empty client-side shell. NEVER /index.html.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.csr.html [L]
+</IfModule>
+
+# 8. HTML is always revalidated, so a new deploy shows at once.
+#    Hashed bundles (main-ABCD1234.js, styles-ABCD1234.css) change name on every build, so they can be cached for a year.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "-[A-Za-z0-9]{8}\.(js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType video/mp4 "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/x-icon "access plus 1 week"
+  ExpiresByType image/vnd.microsoft.icon "access plus 1 week"
+</IfModule>
+# let the showreel video stream/seek on phones
+AddType video/mp4 .mp4
+# favicon: correct type so Google can read the Phian "P" icon
+AddType image/x-icon .ico

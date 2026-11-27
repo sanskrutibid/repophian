@@ -1,0 +1,55 @@
+# ------------------------------------------------------------------
+# phianinfotec.com  .htaccess  STAGE 1 (site is still a client-side Angular app)
+#
+# MERGE these rules into the existing public_html/.htaccess. Do not blindly
+# replace it: Hostinger may have added its own lines.
+# Rules 1 to 5 must sit ABOVE the existing "send everything to index.html" rule.
+#
+# Not tested on the live server. Apply, then run:  bash verify.sh
+# ------------------------------------------------------------------
+
+Options -Indexes
+RewriteEngine On
+
+# 1. One hostname. https://phianinfotec.com currently answers 200 with the same
+#    content as www, which makes two copies of every page.
+#    (No %{HTTPS} test on purpose: TLS ends at Hostinger's CDN, and http to https
+#    already redirects correctly.)
+RewriteCond %{HTTP_HOST} ^phianinfotec\.com$ [NC]
+RewriteRule ^ https://www.phianinfotec.com%{REQUEST_URI} [R=301,L]
+
+# 2. Old-site URLs that are still in search results. Today they are redirected
+#    by JavaScript, which passes no status code to crawlers.
+RewriteRule ^team/?$ /about [R=301,L]
+# Add any other old WordPress URLs here (check Search Console > Pages > Not found):
+# RewriteRule ^services/?$ /what-we-do [R=301,L]
+# RewriteRule ^portfolio/?$ /work [R=301,L]
+
+# 3. /index.html and trailing-slash duplicates (/about/ and /about both return 200 today).
+RewriteCond %{THE_REQUEST} \s/+index\.html[\s?]
+RewriteRule ^index\.html$ / [R=301,L]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# 4. Duplicate case-study URLs. /work-* is what the homepage links to.
+#    CONFIRM each pair is the same story before uncommenting.
+# RewriteRule ^case-study/nsh-hospital$ /work-nsh-hospital [R=301,L]
+# RewriteRule ^case-study/mukunda$ /work-mukunda-group [R=301,L]
+
+# 5. A missing file must be a real 404, not the app shell.
+#    Today /llms.txt returns the HTML shell with 200, and a missing image returns 422.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule \.(?:js|mjs|css|map|png|jpe?g|webp|avif|svg|gif|ico|mp4|webm|woff2?|ttf|txt|xml|json|pdf)$ - [R=404,L]
+
+# 6. Existing single-page-app fallback (keep whatever is already there; shown for order only).
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ /index.html [L]
+
+# 7. Never cache the HTML shell, so a new deploy is picked up at once.
+#    Hashed bundles and images can stay on their long cache.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
